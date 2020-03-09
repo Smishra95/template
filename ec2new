@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: The AWS CloudFormation template for this Serverless application
+Resources:
+  Newemirhel123:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      AvailabilityZone: us-east-2a
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 80
+            VolumeType: gp2
+      ImageId: ami-03cfe750d5ea278f5
+      InstanceType: m5.xlarge
+      KeyName : testnewredhat
+      SecurityGroupIds:
+        - sg-0e42c4b0308aa3747
+      UserData:
+        'Fn::Base64': !Sub >
+          #!/bin/bash -x
+          exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+          yum update 
+          yum install -y python-setuptools
+          yum install -y wget
+          mkdir -p /opt/aws/bin
+          wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+          easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-latest.tar.gz
+          export
+          QSLOCATION=https://aws-quickstart.s3.amazonaws.com/quickstart-redhat-openshift/
+
+          export ENABLE_HAWKULAR=True
+
+          export GET_ANSIBLE_FROM_GIT=False
+
+          export OCP_ANSIBLE_RELEASE=3.11.112-1
+
+          export
+          MASTER_ELBDNSNAME=Red-Hat-O-OpenShif-1JYQVY2E2WPRA-1220455596.us-east-2.elb.amazonaws.com
+
+          export
+          INTERNAL_MASTER_ELBDNSNAME=Red-H-OpenS-5V9L6XVNN819-eacfdc5e743036d7.elb.us-east-2.amazonaws.com
+
+          export
+          OPENSHIFTMASTERINTERNALELB=arn:aws:elasticloadbalancing:us-east-2:120993992065:loadbalancer/net/Red-H-OpenS-5V9L6XVNN819/eacfdc5e743036d7
+
+          export
+          OPENSHIFTMASTERINTERNALTGARN=arn:aws:elasticloadbalancing:us-east-2:120993992065:targetgroup/Red-H-OpenS-1OT1DZC8ETNK7/fa5c1872e98ae172
+
+          export AWS_REGION=${AWS::Region}
+
+          export CONTAINERACCESSELB=Red-Hat-O-Containe-PNLLPUHQKYNH
+
+          export
+          CONTAINERACCESSELB_DNS=Red-Hat-O-Containe-PNLLPUHQKYNH-821060214.us-east-2.elb.amazonaws.com
+
+          export OCP_VERSION=3.11
+
+          export ANSIBLE_VERSION=2.6.6
+
+          export RH_USER=aiotfgk
+
+          export
+          RH_CREDS_ARN='arn:aws:secretsmanager:us-east-2:120993992065:secret:RedhatSubscriptionSecret-LkMn22fRI7iV-PHswtZ'
+
+          export RH_POOLID=8a85f99b707807c40170952d9e9e5124
+
+          export AWS_STACKNAME=${AWS::StackName}
+
+          export QS_S3URI=s3://aws-quickstart/quickstart-redhat-openshift/
+
+          export
+          OCP_PASS_ARN='arn:aws:secretsmanager:us-east-2:120993992065:secret:OpenShiftPasswordSecret-vviLLYUfNjxA-Pe0Z6g'
+
+          export AWS_STACKID=${AWS::StackId}
+
+          export ENABLE_AWSSB=Enabled
+
+          export VPCID=vpc-0b099547f32f8da97
+
+          export ENABLE_AUTOMATIONBROKER=Enabled
+
+          export ENABLE_CLUSTERCONSOLE=Enabled
+
+          export ENABLE_GLUSTERFS=Disabled
+
+          export
+          REGISTRY_BUCKET=red-hat-openshift-march-3-openshif-registrybucket-1mx0y7x5la8oe
+
+          export
+          SB_ROLE=Red-Hat-OpenShift-March-3-OpenSh-ServiceBrokerRole-1XTE4MAXGKLUH
+
+          export
+          SB_TABLE=Red-Hat-OpenShift-March-3-OpenShiftStack-18R79QIHUNXQB-ServiceBrokerTable-1M19X4S98O7ZW
+
+          export SB_VERSION=v1.0.1
+
+          export SB_ACCOUNTID=${AWS::AccountId}
+
+          export
+          LOG_GROUP=Red-Hat-OpenShift-March-3-OpenShiftStack-18R79QIHUNXQB-OpenshiftLogGroup-1Q0U4JIGWVL51
+
+          for e in $(echo "" | tr ',' ' '); do export $e; done
+
+          yum install -y git
+
+          git clone
+          https://github.com/aws-quickstart/quickstart-linux-utilities.git
+
+          export P=/quickstart-linux-utilities/quickstart-cfn-tools.source
+
+          source $P
+
+          qs_bootstrap_pip || qs_err " pip bootstrap failed "
+
+          qs_aws-cfn-bootstrap || qs_err "cfn bootstrap failed"
+
+          pip install awscli  &> /var/log/userdata.awscli_install.log || qs_err
+          " awscli install failed "
+
+          aws s3 cp ${!QS_S3URI}scripts/ansibleconfigserver_bootstrap.sh
+          ./bootstrap.sh
+
+          chmod +x bootstrap.sh
+
+          if [[ -n "" ]]; then
+
+          mkdir -p /quickstart
+
+          aws s3 cp /quickstart/post-install.sh
+
+          chmod +x /quickstart/post-install.sh
+
+          fi
+
+          ./bootstrap.sh || qs_err " Openshift installation failed, see logs for
+          details "
+
+          cfn-signal -e $(qs_status) --stack ${AWS::StackName} --resource
+          Newemirhel --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
