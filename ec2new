@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: The AWS CloudFormation template for this Serverless application
 Resources:
-  Newemirhel123:
+  Newemirhel321:
     Type: 'AWS::EC2::Instance'
     Properties:
       AvailabilityZone: us-east-2a
@@ -136,7 +136,7 @@ Resources:
           details "
 
           cfn-signal -e $(qs_status) --stack ${AWS::StackName} --resource
-          Newemirhel --region ${AWS::Region}
+          Newemirhel321 --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
