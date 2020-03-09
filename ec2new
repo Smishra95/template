@@ -136,7 +136,7 @@ Resources:
           details "
 
           cfn-signal -e $(qs_status) --stack ${AWS::StackName} --resource
-          Newemirhel321 --region ${AWS::Region}
+          Newemirhel32 --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
